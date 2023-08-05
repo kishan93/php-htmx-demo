@@ -1,0 +1,16 @@
+{
+    "name": "kishan/php-htmx-demo",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Kishan Nath",
+            "email": "kishan@trustcode.online"
+        }
+    ],
+    "require": {}
+}
