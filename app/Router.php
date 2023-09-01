@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Exceptions\HttpMethodNotSupportedException;
+use App\Exceptions\RouteNotFoundException;
 use BadMethodCallException;
 
 class Router
@@ -28,11 +30,11 @@ class Router
         $method = strtolower($_SERVER['REQUEST_METHOD']);
 
         if (!array_key_exists($path, static::$routes)) {
-            exit(0);
+            throw new RouteNotFoundException();
         }
 
         if(!array_key_exists($method, static::$routes[$path])) {
-            exit(0);
+            throw new HttpMethodNotSupportedException($method);
         }
 
         $content = call_user_func(static::$routes[$path][$method], []);
