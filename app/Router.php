@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Exceptions\HttpMethodNotSupportedException;
+use App\Exceptions\InvalidRouteResolverException;
 use App\Exceptions\RouteNotFoundException;
 use BadMethodCallException;
 
@@ -27,18 +28,41 @@ class Router
     public static function handle()
     {
         $path = static::path();
-        $method = strtolower($_SERVER['REQUEST_METHOD']);
+        $httpMethod = strtolower($_SERVER['REQUEST_METHOD']);
 
         if (!array_key_exists($path, static::$routes)) {
             throw new RouteNotFoundException();
         }
 
-        if(!array_key_exists($method, static::$routes[$path])) {
-            throw new HttpMethodNotSupportedException($method);
+        if (!array_key_exists($httpMethod, static::$routes[$path])) {
+            throw new HttpMethodNotSupportedException($httpMethod);
         }
 
-        $content = call_user_func(static::$routes[$path][$method], []);
-        App::instance()->setContent($content);
+        $action = static::$routes[$path][$httpMethod];
+
+        if (is_callable($action)) {
+            return call_user_func($action);
+        }
+
+        if (!is_array($action) || count($action) != 2) {
+            throw new InvalidRouteResolverException();
+        }
+
+        [$class, $method] = $action;
+
+        if(!class_exists($class)) {
+            //TODO: check if class is instasiable
+            throw new InvalidRouteResolverException($class." must be instasiable");
+        }
+
+        //TODO: introduce DI
+        $instance = new $class;
+
+        if(!method_exists($instance, $method)){
+            throw new InvalidRouteResolverException($method ." does not exist on ". $class);
+        }
+
+        return call_user_func_array([$instance, $method], []);
     }
 
     public static function __callStatic($name, $arguments)
@@ -50,7 +74,7 @@ class Router
         static::register($name, ...$arguments);
     }
 
-    protected static function register(string $method, string $path, callable $handler)
+    protected static function register(string $method, string $path, callable|array $handler)
     {
         static::$routes[$path][$method] = $handler;
     }

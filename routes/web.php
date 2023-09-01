@@ -9,3 +9,6 @@ Router::get('/', function () {
 Router::post('/clicked', function () {
     return "Clicked";
 });
+
+Router::get('/test',[\App\Http\Controllers\TestController::class, 'index']);
+Router::get('/test/nest',[\App\Http\Controllers\TestController::class, 'nest']);
