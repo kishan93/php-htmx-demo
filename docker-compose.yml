@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./docker
+      dockerfile: php.dockerfile
+    container_name: php-htmlx-app
+    restart: always
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+  web:
+    image: nginx:1.19-alpine
+    container_name: php-htmlx-web
+    restart: always
+    depends_on:
+      - app
+    ports:
+      - "${EXPOSE_NGINX_PORT:-8000}:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d/
