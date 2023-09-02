@@ -14,14 +14,9 @@ class App
         //
     }
 
-    public function setContent(string $content)
+    public function handle()
     {
-        $this->content = $content;
-    }
-
-    public function render()
-    {
-        return $this->content;
+        return Router::handle();
     }
 
     public static function make(...$args): static

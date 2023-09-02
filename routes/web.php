@@ -1,9 +1,10 @@
 <?php
 
 use App\Router;
+use App\View;
 
 Router::get('/', function () {
-    return file_get_contents(path('resources/views/index.html'));
+    return View::make('index.php');
 });
 
 Router::post('/clicked', function () {

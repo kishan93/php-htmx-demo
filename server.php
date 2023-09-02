@@ -4,6 +4,9 @@ use App\App;
 
 require_once __DIR__ . "/vendor/autoload.php";
 
+define('STORAGE_PATH', __DIR__ ."/storage/");
+define('VIEW_PATH', __DIR__ ."/resources/views/");
+
 
 function path($path): string
 {
@@ -11,3 +14,5 @@ function path($path): string
 }
 
 App::make();
+
+require_once __DIR__ ."/routes/web.php";
